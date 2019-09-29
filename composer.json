@@ -1,0 +1,42 @@
+{
+    "name": "sikhlana/laravel-modular",
+    "type": "library",
+    "description": "A simple package to neatly keep models into sub-directories without breaking the table naming.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Saif M.",
+            "email": "xoxo@saifmahmud.name"
+        }
+    ],
+    "require": {
+        "php": "^7.1",
+        "laravel/framework": "^6.0|^5.8"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^4.0",
+        "phpunit/phpunit": "^8.3"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Sikhlana\\Modular\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sikhlana\\Modular\\Test\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Sikhlana\\Modular\\ModularServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
