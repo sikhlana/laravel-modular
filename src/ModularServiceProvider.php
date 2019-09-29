@@ -27,7 +27,7 @@ class ModularServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->extend('command.make.model', function ($command, Container $app) {
+        $this->app->extend('command.model.make', function ($command, Container $app) {
             return $app->make(ModelMakeCommand::class);
         });
     }
