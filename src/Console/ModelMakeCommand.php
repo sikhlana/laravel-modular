@@ -7,30 +7,46 @@ use Illuminate\Support\Str;
 
 class ModelMakeCommand extends BaseCommand
 {
-    protected function rootNamespace()
+    protected function getDefaultNamespace($rootNamespace)
     {
-        return config('modular.models.namespace');
+        return $rootNamespace.'\\'.trim(config('modular.namespaces.models'), '\\');
     }
 
     protected function createMigration()
     {
         $class = substr(
             $this->qualifyClass($this->getNameInput()), strlen(
-                $this->rootNamespace()
+                $this->getDefaultNamespace(trim($this->rootNamespace(), '\\'))
             )
         );
 
-        $table = Str::snake(Str::pluralStudly(
-            str_replace('\\', '', $class)
-        ));
+        $table = str_replace('\\', '', $class);
 
-        if ($this->option('pivot')) {
-            $table = Str::singular($table);
+        if (! $this->option('pivot')) {
+            $table = Str::pluralStudly($table);
         }
+
+        $table = Str::snake($table);
 
         $this->call('make:migration', [
             'name' => "create_{$table}_table",
             '--create' => $table,
+        ]);
+    }
+
+    protected function createController()
+    {
+        $controller = substr(
+            $this->qualifyClass($this->getNameInput()), strlen(
+                $this->getDefaultNamespace(trim($this->rootNamespace(), '\\'))
+            )
+        );
+
+        $modelName = $this->qualifyClass($this->getNameInput());
+
+        $this->call('make:controller', [
+            'name' => "{$controller}Controller",
+            '--model' => $this->option('resource') ? $modelName : null,
         ]);
     }
 

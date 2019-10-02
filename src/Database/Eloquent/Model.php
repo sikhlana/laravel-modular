@@ -5,10 +5,23 @@ namespace Sikhlana\Modular\Database\Eloquent;
 use Illuminate\Database\Eloquent\Model as BaseModel;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Sikhlana\Modular\Support\ModelTableNameGuesser;
 
 class Model extends BaseModel
 {
-    private static $resolvedTables = [];
+    /**
+     * @var ModelTableNameGuesser
+     */
+    protected $tableNameGuesser;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        $this->tableNameGuesser = app()->make(
+            ModelTableNameGuesser::class
+        );
+    }
 
     /**
      * Get the table associated with the model.
@@ -21,69 +34,24 @@ class Model extends BaseModel
             return $this->table;
         }
 
-        if (! isset(self::$resolvedTables[static::class])) {
-            $class = substr(
-                static::class, strlen(
-                    config('modular.models.namespace')
-                )
-            );
-
-            self::$resolvedTables[static::class] = Str::snake(Str::pluralStudly(
-                str_replace('\\', '', $class)
-            ));
-        }
-
-        return self::$resolvedTables[static::class];
+        return $this->tableNameGuesser->table($this);
     }
-
-    private static $resolvedJoiningTables = [];
 
     /**
      * Get the joining table name for a many-to-many relation.
      *
      * @param  string  $related
-     * @param  \Illuminate\Database\Eloquent\Model|null  $instance
+     * @param  BaseModel|null  $instance
      * @return string
      */
     public function joiningTable($related, $instance = null)
     {
-        $table = parent::joiningTable($related, $instance);
-
         if (is_null($instance)) {
-            return $table;
+            return parent::joiningTable($related);
         }
 
-        $key = implode('', Arr::sort([
-            get_class($this), get_class($instance),
-        ]));
-
-        if (! isset(self::$resolvedJoiningTables[$key])) {
-            $first = $this->getTable();
-            $second = $instance->getTable();
-
-            if (strlen($second) < strlen($first)) {
-                [$first, $second] = [$second, $first];
-            }
-
-            $prefix = '';
-            $length = strlen($first);
-
-            for ($i = 0; $i < $length; $i++) {
-                if ($first[$i] === $second[$i]) {
-                    $prefix .= $first[$i];
-                    continue;
-                }
-
-                break;
-            }
-
-            if ($prefix) {
-                $prefix = rtrim($prefix, '_').'_';
-            }
-
-            self::$resolvedJoiningTables[$key] = $prefix.$table;
-        }
-
-        return self::$resolvedJoiningTables[$key];
+        return $this->tableNameGuesser->joiningTable(
+            $this, $instance
+        );
     }
 }

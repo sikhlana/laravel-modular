@@ -3,11 +3,23 @@
 namespace Sikhlana\Modular\Database\Eloquent\Relations;
 
 use Illuminate\Database\Eloquent\Relations\Pivot as BasePivot;
-use Illuminate\Support\Str;
+use Sikhlana\Modular\Support\ModelTableNameGuesser;
 
 class Pivot extends BasePivot
 {
-    private static $resolvedTables = [];
+    /**
+     * @var ModelTableNameGuesser
+     */
+    protected $tableNameGuesser;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        $this->tableNameGuesser = app()->make(
+            ModelTableNameGuesser::class
+        );
+    }
 
     /**
      * Get the table associated with the model.
@@ -20,18 +32,6 @@ class Pivot extends BasePivot
             return $this->table;
         }
 
-        if (! isset(self::$resolvedTables[static::class])) {
-            $class = substr(
-                static::class, strlen(
-                    config('modular.models.namespace')
-                )
-            );
-
-            self::$resolvedTables[static::class] = Str::snake(Str::studly(
-                str_replace('\\', '', $class)
-            ));
-        }
-
-        return self::$resolvedTables[static::class];
+        return $this->tableNameGuesser->table($this);
     }
 }

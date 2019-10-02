@@ -5,6 +5,7 @@ namespace Sikhlana\Modular;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
 use Sikhlana\Modular\Console\ModelMakeCommand;
+use Sikhlana\Modular\Support\ModelTableNameGuesser;
 
 class ModularServiceProvider extends ServiceProvider
 {
@@ -30,5 +31,7 @@ class ModularServiceProvider extends ServiceProvider
         $this->app->extend('command.model.make', function ($command, Container $app) {
             return $app->make(ModelMakeCommand::class);
         });
+
+        $this->app->singleton(ModelTableNameGuesser::class);
     }
 }
