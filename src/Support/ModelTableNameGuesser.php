@@ -76,13 +76,17 @@ class ModelTableNameGuesser
             $prefix .= $first[$i];
         }
 
+        $first = Str::singular($first);
+        $second = Str::singular($second);
+
         if ($prefix !== '') {
-            $first = str_replace($prefix, '', Str::singular($first));
-            $second = str_replace($prefix, '', Str::singular($second));
-            $prefix = rtrim($prefix, '_');
+            $start = Str::length($prefix);
+
+            $first = Str::substr($first, $start);
+            $second = Str::substr($second, $start);
         }
 
-        $table = $prefix.'_'.$first.'_'.$second;
+        $table = $prefix.$first.'_'.$second;
         $this->tableNameCache[$cacheKey] = $table;
 
         return $table;
