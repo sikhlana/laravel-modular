@@ -3,26 +3,10 @@
 namespace Sikhlana\Modular\Database\Eloquent;
 
 use Illuminate\Database\Eloquent\Model as BaseModel;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Sikhlana\Modular\Support\ModelTableNameGuesser;
 
 class Model extends BaseModel
 {
-    /**
-     * @var ModelTableNameGuesser
-     */
-    protected $tableNameGuesser;
-
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-
-        $this->tableNameGuesser = app()->make(
-            ModelTableNameGuesser::class
-        );
-    }
-
     /**
      * Get the table associated with the model.
      *
@@ -34,7 +18,7 @@ class Model extends BaseModel
             return $this->table;
         }
 
-        return $this->tableNameGuesser->table($this);
+        return app()->make(ModelTableNameGuesser::class)->table($this);
     }
 
     /**
@@ -50,8 +34,6 @@ class Model extends BaseModel
             return parent::joiningTable($related);
         }
 
-        return $this->tableNameGuesser->joiningTable(
-            $this, $instance
-        );
+        return app()->make(ModelTableNameGuesser::class)->joiningTable($this, $instance);
     }
 }

@@ -8,20 +8,6 @@ use Sikhlana\Modular\Support\ModelTableNameGuesser;
 class Pivot extends BasePivot
 {
     /**
-     * @var ModelTableNameGuesser
-     */
-    protected $tableNameGuesser;
-
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-
-        $this->tableNameGuesser = app()->make(
-            ModelTableNameGuesser::class
-        );
-    }
-
-    /**
      * Get the table associated with the model.
      *
      * @return string
@@ -32,6 +18,6 @@ class Pivot extends BasePivot
             return $this->table;
         }
 
-        return $this->tableNameGuesser->table($this);
+        return app()->make(ModelTableNameGuesser::class)->table($this);
     }
 }

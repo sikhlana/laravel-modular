@@ -5,7 +5,6 @@ namespace Sikhlana\Modular\Support;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Pivot;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class ModelTableNameGuesser
